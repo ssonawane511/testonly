@@ -1,0 +1,38 @@
+name: Push to Another Repository
+
+on:
+  push:
+    branches:
+      - main # or the branch you want to trigger on
+
+jobs:
+  push_changes:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout the source repository
+        uses: actions/checkout@v2
+        with:
+          repository: ssonawane511/temp1
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: source-folder
+
+      - name: Checkout the target repository
+        uses: actions/checkout@v2
+        with:
+          repository: ssonawane511/automate-artifacts
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: target-repo
+
+      - name: Copy files to target repository
+        run: |
+          cp -r ./source-folder/* ./target-repo/
+
+      - name: Commit and push changes
+        run: |
+          cd target-repo
+          git config user.name "ssonawane511"
+          git config user.email "ssonawane511@gmail.com"
+          git add .
+          git commit -m "Push changes from main repo"
+          git push origin main
